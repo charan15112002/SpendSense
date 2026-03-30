@@ -60,6 +60,34 @@ When Codex returns: read this file top to bottom, then read all governance files
 
 **Current state:** Ready for M0 execution. Founder approval needed to proceed with legacy code archival.
 
+### 2026-03-30 — M0: Workspace Stabilization Completed
+
+**Actor:** Implementer (with Guardian oversight via Founder relay)
+**What happened:**
+- Legacy v1 code archived to `legacy/v1-abandoned/`
+- `.gitignore` created (legacy node_modules, .bundle, .claude/, .env files, metro logs)
+- Git repository initialized on branch `master`
+- All files staged and first commit made: `4f11bf2`
+- Commit message: "M0: Initial commit - Concept Freeze complete, Lock Pack active, legacy code archived"
+- 144 files committed, 35,020 insertions
+
+**Files/folders moved to `legacy/v1-abandoned/`:**
+- `src/` (6 screens, 18 services)
+- `android/` (full native code, build config, resources, gradle)
+- `ios/` (full iOS project, Podfile, xcodeproj)
+- `__mocks__/`, `__tests__/`
+- Root config: App.js, app.json, index.js, package.json, package-lock.json, babel.config.js, metro.config.js, jest.config.js, tsconfig.json, Gemfile, README.md, .eslintrc.js, .prettierrc.js, .watchmanconfig
+
+**Files that remained in place:**
+- `.gitignore` (updated)
+- `docs/design/` (all 11 locked CF sections — untouched)
+- `docs/lock-pack/` (all governance files — untouched)
+- `.claude/` (session data — gitignored)
+
+**Files unsure about:** None. All files cleanly categorized.
+
+**Current state:** M0 complete. Workspace clean. Awaiting Guardian verification before M1 can begin.
+
 ---
 
 ## Current Project State (update after every significant action)
@@ -68,11 +96,11 @@ When Codex returns: read this file top to bottom, then read all governance files
 |---|---|
 | Concept Freeze | COMPLETE — all 11 sections locked |
 | Lock Pack | Active — all governance files present |
-| Git repository | NOT initialized (M0 blocker) |
-| Legacy code | NOT archived (M0 blocker) |
-| Current milestone | M0 not started |
+| Git repository | Initialized — branch `master`, commit `4f11bf2` |
+| Legacy code | Archived to `legacy/v1-abandoned/` |
+| Current milestone | M0 COMPLETE — awaiting Guardian verification |
 | Legal gates | CR-01 open (AI cross-border), CR-02 open (retention/delete) |
 | Compliance items | COMP-01 through COMP-10 all "Not started" |
-| Implementation | NOT started |
+| Implementation | NOT started (M1 pending Guardian approval) |
 | Dual-agent protocol | Active |
-| Guardian project | Not yet created by founder |
+| Guardian project | Active — communicating via Founder relay |
