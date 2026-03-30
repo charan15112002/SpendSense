@@ -169,6 +169,55 @@ When Codex returns: read this file top to bottom, then read all governance files
 
 **Decision:** Handoff log entries will now include founder decisions, protocol changes, and inter-agent coordination details — not just technical milestones.
 
+### 2026-03-30 — Implementer Confirms Zero-Tolerance Protocol
+
+**Actor:** Implementer
+**What happened:**
+- Implementer received and confirmed compliance with zero-tolerance operating standard
+- Confirmed all 15 Implementation Constitution non-negotiables
+- Confirmed pre-coding reads, reporting format, and correction acceptance
+- Noted M1 was built before protocol was received; accepted Guardian verification against full standards regardless
+
+**Files changed:** None
+
+### 2026-03-30 — Guardian M1 Code Verification: PASS
+
+**Actor:** Guardian
+**What happened:**
+- Guardian read all 9 source files and 4 Android config files line-by-line
+- Cross-referenced every enum value, signal weight, and threshold against locked Section 4 (lines 1069-1118) and Section 6 (System 5)
+- Verification covered 4 lock IDs, 15 Implementation Constitution non-negotiables, and 7 out-of-scope checks
+
+**Verification results:**
+- Lock ID M1 (dual distribution): PASS — both flavors build, permissions correct
+- Lock ID M2 (6-axis model): PASS — all 31 economic types, 7 statuses, 3 flows, 11 instruments, 5 liability effects, 6 confidence levels match Section 4 exactly
+- Lock ID M5 (trust scoring): PASS — all 6 signal weights match Section 4 lines 1073-1108 exactly
+- Lock ID M10 (quarantine): PASS — threshold 24, SQL exclusion enforced
+- Spend exclusions: PASS — failed/reversed/pending/self_transfer/credit_card_payment all excluded
+- Out-of-scope: PASS — no listener, no SMS, no classification, no UI, no identity graph, no AI, no legacy reuse
+- Implementation Constitution: PASS — all applicable non-negotiables satisfied
+- Zero deviations found
+
+**Ledger updates:**
+- COV-01: Not started → Verified
+- COV-02: Not started → Verified
+- COV-04: Not started → Verified
+
+**Files changed:**
+- `docs/lock-pack/implementation-coverage-ledger.md` — COV-01, COV-02, COV-04 updated
+
+### 2026-03-30 — M2 Build Brief Issued to Implementer
+
+**Actor:** Guardian
+**What happened:**
+- Guardian prepared M2 build brief (Detection & Pre-Path-Freeze Field Tests)
+- Lock IDs: S2-P01, S4-M1 (dual pipelines), S4-M3, Section 6 System 1, Section 7 C2/C3
+- 9 build items, explicit out-of-scope list, risk warnings
+- Field test requirements documented (T1, T2, T11, T12 — founder testing on Pixel 8)
+- Brief sent to Implementer via founder relay
+
+**Files changed:** None (message-only)
+
 ---
 
 ## Current Project State (update after every significant action)
@@ -176,13 +225,15 @@ When Codex returns: read this file top to bottom, then read all governance files
 | Item | Status |
 |---|---|
 | Concept Freeze | COMPLETE — all 11 sections locked |
-| Lock Pack | Active — 39 governance files (37 original + guardian-session-protocol + founder-relay-guide) |
-| Git repository | Initialized — branch `master`, latest commit `089cf68` |
+| Lock Pack | Active — 39 governance files |
+| Git repository | Initialized — branch `master` |
 | Legacy code | Archived to `legacy/v1-abandoned/` |
-| Current milestone | M1 reported complete by Implementer — PENDING Guardian code verification |
+| M0 | COMPLETE — verified by Guardian |
+| M1 | COMPLETE — verified by Guardian (zero deviations) |
+| Current milestone | M2 — build brief issued to Implementer |
+| Coverage ledger | COV-01 Verified, COV-02 Verified, COV-04 Verified, rest Not started |
 | Legal gates | CR-01 open (AI cross-border), CR-02 open (retention/delete) |
 | Compliance items | COMP-01 through COMP-10 all "Not started" |
-| Implementation | M1 code exists — awaiting Guardian verification |
 | Dual-agent protocol | Active — zero-tolerance standard in effect |
 | Guardian project | Active — full Lock Pack internalized, session protocol locked |
 | Founder relay guide | Created — Charan has copy-paste triggers for both agents |
