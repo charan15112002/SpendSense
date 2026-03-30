@@ -88,6 +88,87 @@ When Codex returns: read this file top to bottom, then read all governance files
 
 **Current state:** M0 complete. Workspace clean. Awaiting Guardian verification before M1 can begin.
 
+### 2026-03-30 — Guardian M0 Verification: PASS
+
+**Actor:** Guardian
+**What happened:**
+- Guardian read all 37 Lock Pack files — complete internalization of Codex's governance system
+- Verified M0 exit conditions against Section 10:
+  - Git initialized: PASS (branch master, commit 4f11bf2)
+  - Legacy code archived: PASS (legacy/v1-abandoned/ contains src/, android/, ios/, all old configs)
+  - Lock Pack verified: PASS (37 governance files present)
+  - All 11 design sections present and LOCKED: PASS (zero modifications)
+  - Workspace clean: PASS (root contains only .gitignore, docs/, legacy/, .git/, .claude/)
+- No write boundary violations detected
+- No drift detected
+- Committed handoff log update: commit `949f8fb`
+
+**Guardian verification result:** M0 COMPLETE. M1 approved to begin.
+
+### 2026-03-30 — M1 Build Brief Issued to Implementer
+
+**Actor:** Guardian
+**What happened:**
+- Guardian prepared full M1 build brief with:
+  - Lock IDs: M1 (dual distribution), M2 (6-axis model), M5 (trust scoring), M10 (quarantine)
+  - 7 build items specified
+  - Explicit out-of-scope list
+  - Risk warnings (R-03, R-04, R-05)
+  - Required locked design sections to read
+  - Write boundaries
+  - Report format requirements
+- Brief sent to Implementer via founder relay
+
+**Files changed:** None (message-only)
+
+### 2026-03-30 — Implementer Reports M1 Complete
+
+**Actor:** Implementer
+**What happened:**
+- Implementer reports all 7 M1 build items complete
+- React Native 0.79.2 scaffolded
+- Dual build flavors (playstore/sideload) configured
+- SQLite schema with full 6-axis model
+- Transaction CRUD operations
+- Trust scoring skeleton (6 signals, 0-100)
+- Quarantine gate
+- 33 unit tests, all passing
+- Both APK flavors build successfully
+
+**Guardian verification:** PENDING — Guardian will read actual code before confirming
+
+### 2026-03-30 — Founder Decision: Zero-Tolerance Operating Standard
+
+**Actor:** Founder (Charan)
+**What happened:**
+- Founder mandated zero-deviation standard for all work
+- Founder instructed Guardian to read every Lock Pack file, fully internalize Codex's role
+- Founder required Guardian to create self-enforcing protocol files
+- Founder required a matching standard message for the Implementer
+
+**Founder's exact words (paraphrased):**
+"Zero degree tolerance. Guardian should push itself to its limits. Create files to lock this for yourself. Ensure implementer stays strong too. Guardian is what understands where things are deviating."
+
+**Decisions made:**
+1. Guardian must read actual code during verification, not just Implementer summaries
+2. Implementer must follow strict pre-coding and reporting protocols
+3. Both agents must re-read their protocol files every session
+4. A founder relay guide was created so Charan can trigger protocol compliance with one line
+
+**Files created:**
+- `docs/lock-pack/guardian-session-protocol.md` — Guardian's zero-tolerance operating lockdown (commit `089cf68`)
+- `docs/lock-pack/founder-relay-guide.md` — Charan's copy-paste relay triggers
+
+### 2026-03-30 — Founder Decision: Codex Must Know Everything
+
+**Actor:** Founder (Charan)
+**What happened:**
+- Founder mandated that every decision between Guardian, Implementer, and Charan must be recorded in this handoff log
+- Not just milestone completions — every decision, every correction, every tension
+- Codex must be able to read this log on April 3rd and have complete understanding of everything that happened
+
+**Decision:** Handoff log entries will now include founder decisions, protocol changes, and inter-agent coordination details — not just technical milestones.
+
 ---
 
 ## Current Project State (update after every significant action)
@@ -95,12 +176,13 @@ When Codex returns: read this file top to bottom, then read all governance files
 | Item | Status |
 |---|---|
 | Concept Freeze | COMPLETE — all 11 sections locked |
-| Lock Pack | Active — all governance files present |
-| Git repository | Initialized — branch `master`, commit `4f11bf2` |
+| Lock Pack | Active — 39 governance files (37 original + guardian-session-protocol + founder-relay-guide) |
+| Git repository | Initialized — branch `master`, latest commit `089cf68` |
 | Legacy code | Archived to `legacy/v1-abandoned/` |
-| Current milestone | M0 COMPLETE — awaiting Guardian verification |
+| Current milestone | M1 reported complete by Implementer — PENDING Guardian code verification |
 | Legal gates | CR-01 open (AI cross-border), CR-02 open (retention/delete) |
 | Compliance items | COMP-01 through COMP-10 all "Not started" |
-| Implementation | NOT started (M1 pending Guardian approval) |
-| Dual-agent protocol | Active |
-| Guardian project | Active — communicating via Founder relay |
+| Implementation | M1 code exists — awaiting Guardian verification |
+| Dual-agent protocol | Active — zero-tolerance standard in effect |
+| Guardian project | Active — full Lock Pack internalized, session protocol locked |
+| Founder relay guide | Created — Charan has copy-paste triggers for both agents |
