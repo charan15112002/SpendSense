@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "description": "Whitelisted bank and UPI app packages for notification detection (Section 6 System 1 step 2, Section 6 System 9 Layer 1)",
+  "packages": {
+    "com.google.android.apps.nbu.paisa": {
+      "name": "Google Pay",
+      "type": "upi_app",
+      "sender_trust": 20
+    },
+    "com.phonepe.app": {
+      "name": "PhonePe",
+      "type": "upi_app",
+      "sender_trust": 20
+    },
+    "net.one97.paytm": {
+      "name": "Paytm",
+      "type": "upi_app",
+      "sender_trust": 20
+    },
+    "com.sbi.SBIFreedomPlus": {
+      "name": "SBI YONO",
+      "type": "bank_app",
+      "sender_trust": 25
+    },
+    "com.sbi.lotusintouch": {
+      "name": "SBI YONO Lite",
+      "type": "bank_app",
+      "sender_trust": 25
+    },
+    "com.csam.icici.bank.imobile": {
+      "name": "ICICI iMobile Pay",
+      "type": "bank_app",
+      "sender_trust": 25
+    },
+    "com.snapwork.hdfc": {
+      "name": "HDFC Mobile Banking",
+      "type": "bank_app",
+      "sender_trust": 25
+    },
+    "com.kotak.mobile.banking": {
+      "name": "Kotak Mobile Banking",
+      "type": "bank_app",
+      "sender_trust": 25
+    },
+    "com.axis.mobile": {
+      "name": "Axis Mobile",
+      "type": "bank_app",
+      "sender_trust": 25
+    }
+  },
+  "explicitly_excluded": {
+    "com.google.android.gm": "Gmail — v1 learning: payment emails created duplicate transactions (Section 7 C6)"
+  }
+}

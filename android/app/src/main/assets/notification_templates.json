@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "description": "Bank/app-specific regex templates for notification parsing (Section 7 C2: updatable JSON config)",
+  "templates": {
+    "com.google.android.apps.nbu.paisa": [
+      {
+        "name": "gpay_paid",
+        "pattern": "Paid (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) to (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      },
+      {
+        "name": "gpay_received",
+        "pattern": "Received (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) from (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "inflow"
+      }
+    ],
+    "com.phonepe.app": [
+      {
+        "name": "phonepe_paid",
+        "pattern": "(?:Paid|Sent) (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) to (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      },
+      {
+        "name": "phonepe_received",
+        "pattern": "Received (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) from (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "inflow"
+      }
+    ],
+    "net.one97.paytm": [
+      {
+        "name": "paytm_paid",
+        "pattern": "(?:Paid|Sent) (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) to (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      },
+      {
+        "name": "paytm_received",
+        "pattern": "Received (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) from (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "inflow"
+      }
+    ],
+    "com.sbi.SBIFreedomPlus": [
+      {
+        "name": "sbi_debited",
+        "pattern": "(?:Your A/c|A/c)\\s*(?:XX|xx|\\*+)\\s*\\d+\\s*(?:is )?debited (?:for |by )?(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "sbi_credited",
+        "pattern": "(?:Your A/c|A/c)\\s*(?:XX|xx|\\*+)\\s*\\d+\\s*(?:is )?credited (?:with |by )?(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)",
+        "extract": { "amount": 1 },
+        "flow": "inflow"
+      }
+    ],
+    "com.sbi.lotusintouch": [
+      {
+        "name": "sbi_lite_debited",
+        "pattern": "(?:Your A/c|A/c)\\s*(?:XX|xx|\\*+)\\s*\\d+\\s*(?:is )?debited (?:for |by )?(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "sbi_lite_credited",
+        "pattern": "(?:Your A/c|A/c)\\s*(?:XX|xx|\\*+)\\s*\\d+\\s*(?:is )?credited (?:with |by )?(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)",
+        "extract": { "amount": 1 },
+        "flow": "inflow"
+      }
+    ],
+    "com.snapwork.hdfc": [
+      {
+        "name": "hdfc_debited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?) debited from (?:a/c|A/c|account)\\s*\\*+\\d+",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "hdfc_credited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?) credited to (?:a/c|A/c|account)\\s*\\*+\\d+",
+        "extract": { "amount": 1 },
+        "flow": "inflow"
+      }
+    ],
+    "com.csam.icici.bank.imobile": [
+      {
+        "name": "icici_debited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |)debited",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "icici_credited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |)credited",
+        "extract": { "amount": 1 },
+        "flow": "inflow"
+      }
+    ],
+    "com.kotak.mobile.banking": [
+      {
+        "name": "kotak_debited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*debited",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "kotak_credited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*credited",
+        "extract": { "amount": 1 },
+        "flow": "inflow"
+      }
+    ],
+    "com.axis.mobile": [
+      {
+        "name": "axis_debited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |)debited",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "axis_credited",
+        "pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |)credited",
+        "extract": { "amount": 1 },
+        "flow": "inflow"
+      }
+    ]
+  },
+  "generic_fallback": {
+    "description": "Used when no template matches for a whitelisted package (Section 7 C2 mitigation #3)",
+    "amount_pattern": "(?:Rs\\.?|₹|INR)\\s?([\\d,]+(?:\\.\\d{1,2})?)",
+    "merchant_pattern": "(?:to|from|at)\\s+([A-Za-z][A-Za-z0-9 ._-]{2,30})"
+  },
+  "status_keywords": {
+    "failed": ["failed", "failure", "unsuccessful", "declined", "rejected", "cbs rejection"],
+    "pending": ["pending", "processing", "initiated"],
+    "reversed": ["reversed", "reversal"],
+    "refunded": ["refund", "refunded"],
+    "disputed": ["disputed", "chargeback"],
+    "expired": ["expired"],
+    "success": ["success", "successful", "credited", "debited", "paid", "received", "sent"]
+  },
+  "status_priority_note": "If both failure and success keywords present, failure takes priority (Section 4 D2)"
+}

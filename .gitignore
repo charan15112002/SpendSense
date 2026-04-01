@@ -70,8 +70,7 @@ legacy/v1-abandoned/node_modules/
 legacy/v1-abandoned/.bundle/
 
 # Claude Code session data
-.claude/projects/
-.claude/todos/
+.claude/
 
 # Environment and secrets
 .env

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "description": "Known bank SMS sender shortcodes for sideload detection (Section 6 System 9 Layer 4, Section 7 C2)",
+  "shortcodes": {
+    "SBI": {
+      "senders": ["SBIBNK", "SBIPSG", "SBIINB", "SBIATM", "SBISBI"],
+      "type": "bank",
+      "sender_trust": 25
+    },
+    "HDFC": {
+      "senders": ["HDFCBK", "HDFCBN", "HDFCNB"],
+      "type": "bank",
+      "sender_trust": 25
+    },
+    "ICICI": {
+      "senders": ["ICICIB", "ICICIBANK", "ICICIN"],
+      "type": "bank",
+      "sender_trust": 25
+    },
+    "Kotak": {
+      "senders": ["KOTAKB", "KOTKBK"],
+      "type": "bank",
+      "sender_trust": 25
+    },
+    "Axis": {
+      "senders": ["AXISBK", "AXISBN"],
+      "type": "bank",
+      "sender_trust": 25
+    },
+    "GPay": {
+      "senders": ["GOOPAY", "GOOGPAY"],
+      "type": "upi_app",
+      "sender_trust": 20
+    },
+    "PhonePe": {
+      "senders": ["PHONPE", "PHNPAY"],
+      "type": "upi_app",
+      "sender_trust": 20
+    },
+    "Paytm": {
+      "senders": ["PAYTMB", "PYTM", "PAYTM1"],
+      "type": "upi_app",
+      "sender_trust": 20
+    }
+  },
+  "phishing_phrases": [
+    "click here",
+    "update kyc",
+    "verify now",
+    "link your",
+    "act immediately",
+    "update your account",
+    "verify your identity",
+    "click below"
+  ]
+}

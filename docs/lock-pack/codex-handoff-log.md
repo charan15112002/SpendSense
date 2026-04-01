@@ -218,6 +218,104 @@ When Codex returns: read this file top to bottom, then read all governance files
 
 **Files changed:** None (message-only)
 
+### 2026-03-31 — Guardian M2 Code Verification: PASS
+
+**Actor:** Guardian
+**What happened:**
+- Guardian read all 16 M2 source files line-by-line (4 main Kotlin modules, 3 sideload Kotlin modules, 3 JSON configs, 3 TypeScript services, 2 test files, 1 updated manifest)
+- Cross-referenced every value against locked Section 6 System 1 (pipeline), System 9 (fake defense), Section 7 C1/C2/C3, Section 4 D2 (status detection)
+- Verified all 5 fake defense layers (Layers 1-2 built, Layer 3 deferred to M3, Layer 4 built, Layer 5 deferred to M5)
+- Verified bridge contract matches Section 7 C3 exactly (getListenerStatus, rebindListener, event emission)
+- Verified all package whitelist sender_trust values against Section 4 lines 1073-1079
+- Verified failure-takes-priority status detection (Section 4 D2)
+- Verified CBS rejection as failure keyword (v1 learning)
+- Verified Gmail explicitly excluded (Section 7 C6)
+- Verified SMS link → trust=0 override (System 9 Layer 4)
+- Verified phishing phrases → auto-reject (System 9 Layer 4)
+- Verified parser health counter with 7-day rolling window and needsAttention at <50% over 20+ entries (Section 7 C2 mitigation #4)
+- Verified all out-of-scope items absent: no classification, no identity graph, no UI, no AI, no Layer 3 anomaly, no Layer 5 reporting, no legacy reuse
+- Verified all 15 Implementation Constitution non-negotiables (applicable ones satisfied, N/A ones correctly deferred)
+- Zero deviations found
+
+**Verification result:** M2 CODE VERIFIED — PASS, zero deviations. However, M2 milestone is NOT complete — Section 10 defines M2 as "Build + field-test milestone." Field tests T1, T2, T11, T12 are exit conditions and have not been run yet.
+
+### 2026-03-31 — Guardian Self-Correction: M2 Field Tests Required
+
+**Actor:** Guardian (self-correction prompted by Founder)
+**What happened:**
+- Founder asked: "is the testing not required for M2?" and pointed to field-test-procedure-m2.md
+- Guardian reviewed Section 10 M2 definition (line 149): "Field tests: pre-path-freeze | T1, T2, T11, T12 — must complete within this milestone"
+- Guardian reviewed M2 exit conditions (lines 176-183): "Pre-path-freeze test results documented" is a required exit condition
+- Guardian acknowledged error: had issued M2 PASS based on code only, without flagging that field tests are mandatory exit conditions
+- M2 status corrected from "COMPLETE" to "Code verified, field tests pending"
+- M3 build brief HELD — not to be sent until field tests complete
+- Implementer instructed to prepare APK for founder testing
+
+**Founder decision:** Field tests must be run before M3 begins.
+**Guardian lesson:** Never treat a build+field-test milestone as code-only. Always check Section 10 exit conditions before issuing a milestone verdict.
+
+### 2026-03-31 — Guardian Self-Correction #2: Evidence Capture System Missing
+
+**Actor:** Guardian (self-correction prompted by Founder)
+**What happened:**
+- Founder pointed out that the field test procedure (field-test-procedure-m2.md) asks Charan to manually record results, which contradicts the Lock Pack evidence model
+- Guardian re-read ALL governance files and found three files that contradict the manual-recording approach:
+  1. `testing-operations-workflow.md` — "Charan is the test executor, not the only source of truth. The app captures structured evidence."
+  2. `test-evidence-capture-plan.md` — Mode B (Founder Diagnostic Mode) requires the app to capture full event timelines, parser decisions, platform events automatically
+  3. `milestone-preflight-checklist.md` — STOP condition: "do not start if milestone depends on vague verbal tester feedback with no evidence-capture plan"
+  4. `evidence-bundle-contract.md` — defines mandatory bundle components (manifest.json, event-timeline.jsonl, decision-trace.jsonl, etc.)
+- Conclusion: The Implementer's field test procedure deviates from Lock Pack governance. The evidence capture system (Mode B diagnostic logging + export) should have been built as part of M2 before field testing can begin.
+- Guardian also failed to verify this — applied code verification rigor but not the same rigor to the test procedure document
+
+**What was missed (complete list):**
+1. Field tests T1/T2/T11/T12 as M2 exit conditions
+2. Diagnostic evidence capture system (Mode B) not built
+3. Evidence bundle export capability not built
+4. Event timeline recording not built
+5. Platform trace recording not built
+6. Field test procedure contradicts Lock Pack evidence model
+
+**Root cause of Guardian failure:**
+- Verified code against locked sections (correctly) but did not verify milestone against exit conditions
+- Verified code files but did not verify test procedure against governance files
+- Conflated "code is correct" with "milestone is complete"
+
+**Corrective actions taken:**
+1. `guardian-session-protocol.md` updated with new Section 4b: Milestone Verdict Gate (mandatory checks before any PASS/FAIL)
+2. Verification standards expanded to include non-code deliverables
+3. Handoff log updated with full failure record
+4. Implementer to be instructed to build evidence capture system before field testing
+
+**Founder's position:** "I don't want sorry. I want explanation." — Founder demands root cause analysis, not apology. Founder also correctly identified that depending on human feedback alone for testing contradicts the Lock Pack. Founder referenced earlier discussions where it was agreed Charan would follow procedures and evidence would be recorded automatically and exported.
+
+**Impact on Codex handoff:** Codex must know that Guardian's verification process had a gap. The gap has been patched in the protocol file. Codex should verify the patch is sufficient.
+
+### 2026-03-31 — Founder Decision: Implementer Must Read ALL Lock Pack Files
+
+**Actor:** Founder (Charan)
+**What happened:**
+- Founder observed that both Guardian and Implementer missed governance requirements because they read only a subset of Lock Pack files
+- Founder mandated: Implementer must read ALL 39 Lock Pack files before responding to any build brief
+- Guardian drafted revised instructions requiring full Lock Pack read plus evidence capture system build
+- M2 remains incomplete until: (1) evidence capture system built, (2) field test procedure rewritten, (3) field tests run with automated evidence, (4) Guardian verifies everything
+
+**Founder's reasoning:** "i want implementer to read all the lock files not just few. that is how you both would respond correctly i feel."
+
+**Files changed:**
+- `docs/lock-pack/codex-handoff-log.md` — this entry added
+
+**Ledger updates:**
+- COV-03: Not started → Verified
+
+**Founder questions addressed:**
+1. Implementer protocol compliance: Confirmed — lock IDs cited, out-of-scope respected, custom Kotlin used, v1 learnings applied
+2. Guardian strictness: Confirmed — 16 files read line-by-line, every value cross-referenced
+3. Modularity: Addressed — current architecture supports feature isolation, will add explicit modularity instruction to M3 build brief
+
+**Files changed:**
+- `docs/lock-pack/implementation-coverage-ledger.md` — COV-03 updated to Verified
+- `docs/lock-pack/codex-handoff-log.md` — this entry added, state table updated
+
 ---
 
 ## Current Project State (update after every significant action)
@@ -230,8 +328,8 @@ When Codex returns: read this file top to bottom, then read all governance files
 | Legacy code | Archived to `legacy/v1-abandoned/` |
 | M0 | COMPLETE — verified by Guardian |
 | M1 | COMPLETE — verified by Guardian (zero deviations) |
-| Current milestone | M2 — build brief issued to Implementer |
-| Coverage ledger | COV-01 Verified, COV-02 Verified, COV-04 Verified, rest Not started |
+| Current milestone | M2 — code verified PASS, but evidence capture system NOT BUILT and field tests NOT RUN. Implementer must build Mode B diagnostic capture + evidence export before field testing begins. |
+| Coverage ledger | COV-01 Verified, COV-02 Verified, COV-03 Verified, COV-04 Verified, rest Not started |
 | Legal gates | CR-01 open (AI cross-border), CR-02 open (retention/delete) |
 | Compliance items | COMP-01 through COMP-10 all "Not started" |
 | Dual-agent protocol | Active — zero-tolerance standard in effect |

@@ -1,0 +1,20 @@
+<!-- Sideload flavor: SMS-first detection with notification secondary. (Lock ID: S4-M2) -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- SMS permissions for sideload: primary detection channel -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <application>
+        <!-- SMS BroadcastReceiver — sideload only (Lock ID: S4-M2, Section 7 C3) -->
+        <receiver
+            android:name=".detection.SpendSenseSmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

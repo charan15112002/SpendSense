@@ -1,0 +1,8 @@
+<!-- Play Store flavor: notification-first detection only. No SMS permissions. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NotificationListenerService permission is granted via Settings toggle, not runtime -->
+
+    <!-- Explicitly NO READ_SMS / RECEIVE_SMS permissions for Play Store compliance -->
+
+</manifest>

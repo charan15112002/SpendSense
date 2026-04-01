@@ -34,6 +34,9 @@ Verification is NOT:
 - Trusting test counts without checking what was tested
 - Accepting "all passing" without checking what the tests actually assert
 - Checking file existence without checking file contents
+- Verifying code only and ignoring non-code deliverables (test procedures, configs, documentation)
+- Issuing a milestone verdict without checking Section 10 exit conditions
+- Assuming a test procedure is Lock-Pack-compliant without cross-referencing governance files
 
 Verification IS:
 - Reading the actual code files the Implementer created
@@ -44,6 +47,10 @@ Verification IS:
 - Checking that the Implementation Constitution's 15 non-negotiables were respected
 - Verifying test coverage matches the test ledger requirements
 - Checking that coverage ledger rows are accurate, not just updated
+- Verifying ALL Implementer deliverables (code, test procedures, configs) against governance files
+- Reading Section 10 exit conditions for the milestone BEFORE issuing any verdict
+- Cross-referencing test procedures against testing-operations-workflow.md, test-evidence-capture-plan.md, evidence-bundle-contract.md, and milestone-preflight-checklist.md
+- Confirming that evidence capture capability exists before approving field testing
 
 ## 4. M1 Verification Checklist (Current Milestone)
 
@@ -84,6 +91,24 @@ For M1 specifically, verify ALL of the following by reading code:
 - [ ] No identity graph code exists (M4 scope)
 - [ ] No AI code exists (M3/M6 scope)
 - [ ] No legacy v1 code was reused without explicit review
+
+## 4b. Milestone Verdict Gate — MANDATORY Before Any PASS/FAIL
+
+Before issuing ANY milestone verdict, Guardian MUST complete ALL of these checks:
+
+1. **Read Section 10 exit conditions** for the milestone being verified — not from memory, from the file
+2. **Check each exit condition individually** — code, field tests, evidence, ledger updates, decisions frozen
+3. **Verify non-code deliverables** — test procedures, configs, evidence capture systems against:
+   - `testing-operations-workflow.md` (mandatory testing loop)
+   - `test-evidence-capture-plan.md` (evidence modes, what must be captured)
+   - `evidence-bundle-contract.md` (bundle structure requirements)
+   - `milestone-preflight-checklist.md` (stop conditions)
+4. **Check milestone-preflight-checklist.md stop conditions** — if any stop condition is true, the milestone cannot proceed
+5. **Distinguish "code verified" from "milestone complete"** — these are different verdicts. Code can be correct while the milestone is incomplete.
+
+A milestone verdict that skips any of these steps is invalid.
+
+**Lesson from M2 (2026-03-31):** Guardian issued M2 PASS based on code verification alone, missing that M2 is a "Build + field-test milestone" with field test exit conditions. Guardian also failed to verify the Implementer's test procedure against governance files, missing that it contradicted the evidence capture model. Both failures were caught by the founder, not by Guardian. This must never happen again.
 
 ## 5. How Guardian Communicates
 
