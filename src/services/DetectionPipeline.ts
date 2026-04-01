@@ -40,6 +40,7 @@ import {
 import {applyQuarantineGate} from './QuarantineGate';
 import {createTransaction, type CreateTransactionInput} from '../database/TransactionRepository';
 import {updateParserHealth} from './ParserHealth';
+import {logTimelineEvent, logDiscardEvent, logDecision} from './DiagnosticLogger';
 import type {Transaction, ConfidenceLevel} from '../models/Transaction';
 
 // Basic dedup: track recent transactions to prevent obvious double-inserts
@@ -101,10 +102,21 @@ export async function processNotification(
   whitelist: PackageWhitelist,
   templates: TemplateConfig,
 ): Promise<Transaction | null> {
+  // Log: source received
+  logTimelineEvent({
+    event: 'notification_received',
+    source: 'notification',
+    package_or_sender: packageName,
+    detail: {timestamp},
+  });
+
   // Step 2: FILTER — non-whitelisted packages discarded immediately
   if (!isPackageWhitelisted(packageName, whitelist)) {
+    logDiscardEvent({source: 'notification', package_or_sender: packageName, reason: 'not_whitelisted'});
     return null; // Section 6 System 1 step 2, System 9 Layer 1
   }
+
+  logTimelineEvent({event: 'filter_passed', source: 'notification', package_or_sender: packageName});
 
   // Step 3-4: PARSE + VALIDATE
   const parsed = parseNotificationText(rawText, packageName, templates);
@@ -113,11 +125,21 @@ export async function processNotification(
   updateParserHealth(packageName, parsed !== null);
 
   if (!parsed) {
+    logDiscardEvent({source: 'notification', package_or_sender: packageName, reason: 'parse_failed_no_amount'});
+    logDecision({function_name: 'parseNotificationText', inputs: {packageName}, output: {result: null}, exclusion_reason: 'no_amount_extracted'});
     return null; // Amount not extractable → discard
   }
 
+  logTimelineEvent({
+    event: 'parse_success',
+    source: 'notification',
+    package_or_sender: packageName,
+    detail: {amount: parsed.amount, merchant: parsed.merchant, status: parsed.status, flow: parsed.flow, templateMatchLevel: parsed.templateMatchLevel},
+  });
+
   // Step 5: DEDUP (basic — M2 scope)
   if (isDuplicate(parsed.amount, timestamp, 'notification')) {
+    logTimelineEvent({event: 'dedup_discarded', source: 'notification', package_or_sender: packageName, detail: {amount: parsed.amount}});
     return null;
   }
 
@@ -150,6 +172,13 @@ export async function processNotification(
 
   const trustResult = computeTrustScore(signals);
 
+  logDecision({
+    function_name: 'computeTrustScore',
+    inputs: {signals},
+    output: {score: trustResult.score, behavior: trustResult.behavior},
+    score: trustResult.score,
+  });
+
   // Step 7: Build transaction input with 6-axis model (S4-M3)
   const txInput: CreateTransactionInput = {
     amount: parsed.amount,
@@ -171,8 +200,31 @@ export async function processNotification(
   // Step 7b: Quarantine gate (M10)
   const gatedInput = applyQuarantineGate(txInput, trustResult);
 
+  logDecision({
+    function_name: 'applyQuarantineGate',
+    inputs: {trust_score: trustResult.score},
+    output: {is_quarantined: gatedInput.is_quarantined},
+    score: trustResult.score,
+    exclusion_reason: gatedInput.is_quarantined ? 'trust_below_threshold' : undefined,
+  });
+
   // Step 8: STORE
-  return createTransaction(gatedInput);
+  const result = await createTransaction(gatedInput);
+
+  logTimelineEvent({
+    event: 'transaction_stored',
+    source: 'notification',
+    package_or_sender: packageName,
+    detail: {
+      amount: gatedInput.amount,
+      trust_score: gatedInput.trust_score,
+      is_quarantined: gatedInput.is_quarantined,
+      confidence: gatedInput.confidence,
+      transaction_id: result?.id,
+    },
+  });
+
+  return result;
 }
 
 /**
@@ -187,15 +239,21 @@ export async function processSms(
   templates: TemplateConfig,
   shortcodeDB: ShortcodeDB,
 ): Promise<Transaction | null> {
+  // Log: source received
+  logTimelineEvent({event: 'sms_received', source: 'sms', package_or_sender: sender, detail: {timestamp}});
+
   // Step 2: FILTER — check sender against bank shortcode DB
   const senderInfo = isSenderKnown(sender, shortcodeDB);
 
   if (!senderInfo.known) {
     // Secondary filter: check for financial keywords
     if (!hasFinancialKeywords(rawText)) {
+      logDiscardEvent({source: 'sms', package_or_sender: sender, reason: 'unknown_sender_no_financial_keywords'});
       return null; // Neither known sender nor financial keywords → discard
     }
   }
+
+  logTimelineEvent({event: 'filter_passed', source: 'sms', package_or_sender: sender, detail: {bank: senderInfo.bankName}});
 
   // Step 3-4: PARSE + VALIDATE
   const parsed = parseSmsText(rawText, sender, templates, shortcodeDB);
@@ -205,17 +263,28 @@ export async function processSms(
   updateParserHealth(bankName, parsed !== null);
 
   if (!parsed) {
+    logDiscardEvent({source: 'sms', package_or_sender: sender, reason: 'parse_failed_no_amount'});
+    logDecision({function_name: 'parseSmsText', inputs: {sender}, output: {result: null}, exclusion_reason: 'no_amount_extracted'});
     return null;
   }
+
+  logTimelineEvent({
+    event: 'parse_success',
+    source: 'sms',
+    package_or_sender: sender,
+    detail: {amount: parsed.amount, merchant: parsed.merchant, status: parsed.status, flow: parsed.flow},
+  });
 
   // Layer 4 (Section 6 System 9): SMS with link → trust = 0
   // Layer 4: Phishing phrases → auto-reject
   if (parsed.containsPhishingPhrase) {
+    logDiscardEvent({source: 'sms', package_or_sender: sender, reason: 'phishing_phrase_detected'});
     return null; // "click here", "update KYC" etc. → auto-reject, Section 6 System 9 Layer 4
   }
 
   // Step 5: DEDUP (basic — M2 scope)
   if (isDuplicate(parsed.amount, timestamp, 'sms')) {
+    logTimelineEvent({event: 'dedup_discarded', source: 'sms', package_or_sender: sender, detail: {amount: parsed.amount}});
     return null;
   }
 
@@ -253,8 +322,22 @@ export async function processSms(
 
   let trustResult = computeTrustScore(signals);
 
+  logDecision({
+    function_name: 'computeTrustScore',
+    inputs: {signals, source: 'sms'},
+    output: {score: trustResult.score, behavior: trustResult.behavior},
+    score: trustResult.score,
+  });
+
   // Layer 4 override: SMS with link → force trust = 0
   if (smsLinkTrustOverride !== null) {
+    logDecision({
+      function_name: 'smsLinkTrustOverride',
+      inputs: {original_score: trustResult.score, containsLink: true},
+      output: {score: 0, behavior: 'warn_user'},
+      score: 0,
+      exclusion_reason: 'sms_contains_link',
+    });
     trustResult = {
       ...trustResult,
       score: 0,
@@ -283,5 +366,28 @@ export async function processSms(
   // Quarantine gate (M10)
   const gatedInput = applyQuarantineGate(txInput, trustResult);
 
-  return createTransaction(gatedInput);
+  logDecision({
+    function_name: 'applyQuarantineGate',
+    inputs: {trust_score: trustResult.score, source: 'sms'},
+    output: {is_quarantined: gatedInput.is_quarantined},
+    score: trustResult.score,
+    exclusion_reason: gatedInput.is_quarantined ? 'trust_below_threshold' : undefined,
+  });
+
+  const result = await createTransaction(gatedInput);
+
+  logTimelineEvent({
+    event: 'transaction_stored',
+    source: 'sms',
+    package_or_sender: sender,
+    detail: {
+      amount: gatedInput.amount,
+      trust_score: gatedInput.trust_score,
+      is_quarantined: gatedInput.is_quarantined,
+      confidence: gatedInput.confidence,
+      transaction_id: result?.id,
+    },
+  });
+
+  return result;
 }

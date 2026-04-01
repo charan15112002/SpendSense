@@ -14,7 +14,10 @@ class SpendSenseDetectionPackage : ReactPackage {
     override fun createNativeModules(
         reactContext: ReactApplicationContext
     ): List<NativeModule> {
-        return listOf(SpendSenseDetectionModule(reactContext))
+        return listOf(
+            SpendSenseDetectionModule(reactContext),
+            EvidenceExportModule(reactContext),
+        )
     }
 
     override fun createViewManagers(

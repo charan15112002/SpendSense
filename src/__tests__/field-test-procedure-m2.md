@@ -1,188 +1,286 @@
 # M2 Field Test Procedure — Pre-Path-Freeze Tests
 
-**Build:** `app-playstore-release.apk` for T1, T2, T11, T12
-**Device:** Pixel 8, Android 16
-**Tester:** Charan (founder)
-**Date:** After M2 build verified
+**YOUR JOB:** Install the app, make payments, export the evidence file. That's it.
+**THE APP'S JOB:** Record everything automatically. You do NOT need to fill any tables or write anything down.
+
+**Build:** `app-playstore-release.apk` (or `app-sideload-release.apk` for SMS tests)
+**Device:** Pixel 8
+**Tester:** Charan
 
 ---
 
-## T1: GPay Notification Parsing
+## PART 1: Getting the App on Your Phone
 
-**Purpose:** Verify that GPay payment notifications are parsed correctly across banks.
-**Decision it informs:** Play Store detection coverage and template library quality.
-**Target:** 50+ notifications across available banks.
+### Step 1: Connect your phone to your laptop
 
-### Setup
-1. Install `app-playstore-release.apk` on Pixel 8
-2. Open SpendSense → go to Settings
-3. Grant notification access (toggle SpendSense ON in Notification Access settings)
-4. Confirm listener status shows "Connected" in app
+1. Get a USB-C cable.
+2. Plug one end into your Pixel 8 phone.
+3. Plug the other end into your laptop.
+4. Your phone will show a popup: "Allow USB debugging?"
+5. Tap **"Allow"**.
+6. If it asks "Always allow from this computer?" — check the box and tap **"Allow"**.
 
-### Test Steps
-1. Open GPay on Pixel 8
-2. Make a small UPI payment (₹1-₹10) to any merchant or contact
-3. Wait 5 seconds
-4. Open SpendSense
-5. Check if a transaction appeared
-6. Record in the table below:
-   - Payment app used (GPay/PhonePe/Paytm)
-   - Bank account used (HDFC/SBI)
-   - Amount sent
-   - Did SpendSense detect it? (Yes/No)
-   - Was amount correct? (Yes/No)
-   - Was merchant name captured? (Yes/No/Partial)
-   - Raw notification text (screenshot or copy)
+If you do NOT see this popup, you need to turn on USB debugging first:
 
-### Repeat for:
-- [ ] GPay with HDFC account — 5 payments
-- [ ] GPay with SBI account — 5 payments
-- [ ] PhonePe with HDFC account — 5 payments (if available)
-- [ ] PhonePe with SBI account — 5 payments (if available)
-- [ ] Paytm — 5 payments (if available)
-- [ ] Receive payment (inflow) — 3 payments
+1. On your phone, open **Settings**.
+2. Scroll down and tap **About phone**.
+3. Find **Build number** and tap it **7 times** fast.
+4. It will say "You are now a developer!"
+5. Go back to **Settings**.
+6. Tap **System** → **Developer options**.
+7. Find **USB debugging** and turn it **ON**.
+8. Now unplug and replug the USB cable — you should see the popup.
 
-### Record Table
+### Step 2: Install the app
 
-| # | App | Bank | Amount | Detected? | Amount OK? | Merchant? | Notes |
-|---|-----|------|--------|-----------|------------|-----------|-------|
-| 1 | | | | | | | |
-| 2 | | | | | | | |
-| ... | | | | | | | |
+1. On your laptop, open a terminal (search "Terminal" in Windows Start Menu).
+2. Type this command and press Enter:
 
-### What to Report
-- Total payments made
-- Total detected by SpendSense
-- Detection rate (detected / total × 100%)
-- Any cases where merchant was "Unknown"
-- Any cases where amount was wrong
-- Screenshot of any notification that was NOT detected
+```
+adb install "C:\Users\Charan\Desktop\SpendSense - Copy\android\app\build\outputs\apk\playstore\release\app-playstore-release.apk"
+```
+
+3. Wait. It will say **"Success"** when done.
+4. If it says "device not found" — unplug and replug the USB cable, then try again.
+
+For sideload testing (SMS tests), use this command instead:
+
+```
+adb install "C:\Users\Charan\Desktop\SpendSense - Copy\android\app\build\outputs\apk\sideload\release\app-sideload-release.apk"
+```
+
+### Step 3: Open SpendSense on your phone
+
+1. On your phone, find **SpendSense** in your app list.
+2. Tap to open it.
 
 ---
 
-## T2: Listener Battery Survival (72-Hour Soak Test)
+## PART 2: Setting Up Notification Access
 
-**Purpose:** Does the NotificationListenerService survive 72 hours without user interaction?
-**Decision it informs:** Is a foreground service needed on Pixel 8?
+SpendSense needs permission to read your payment notifications. Without this, it cannot detect any payments.
 
-### Setup
-1. Same install from T1 (notification access already granted)
-2. Note the current time: ___________
-3. Ensure battery optimization is at DEFAULT settings (do not manually exclude SpendSense)
-4. Do NOT open SpendSense for the next 72 hours
+### Step 4: Give notification access to SpendSense
 
-### Test Steps
-1. **Hour 0:** Make 1 payment via GPay. Verify SpendSense detected it.
-2. **Close SpendSense** — do not open it again for 72 hours.
-3. **Hour 24:** Make 1 payment via GPay. Do NOT open SpendSense.
-4. **Hour 48:** Make 1 payment via GPay. Do NOT open SpendSense.
-5. **Hour 72:** Make 1 payment via GPay. Now open SpendSense.
-6. **Check:** Are all 4 transactions present?
+1. On your phone, open **Settings**.
+2. Tap **Notifications**.
+3. Tap **Notification access** (or **Device & app notifications** — it varies).
+4. Find **SpendSense** in the list.
+5. Tap the toggle to turn it **ON**.
+6. A warning will appear: "Allow SpendSense to read all notifications?"
+7. Tap **"Allow"**.
 
-### Record Table
+After this, go back to SpendSense. It should now be ready to detect payments.
 
-| Time | Payment Made? | Amount | Detected? (check at Hour 72) |
-|------|--------------|--------|------------------------------|
-| Hour 0 | | | |
-| Hour 24 | | | |
-| Hour 48 | | | |
-| Hour 72 | | | |
+### Step 5: Make sure notifications are ON for your payment apps
 
-### What to Report
-- Were all 4 transactions captured?
-- If any were missed: which hour(s)?
-- Was the listener still connected when you opened the app at Hour 72?
-- Battery percentage at Hour 0 and Hour 72
-- Did you charge the phone during the test? (Yes/No)
+SpendSense reads notifications from these apps. For each app you have installed, make sure notifications are turned ON:
 
-### Possible Outcomes
-- **All 4 detected:** Listener survives on Pixel 8 without foreground service → good
-- **Some missed:** Note which hours were missed → foreground service may be needed
-- **None after Hour 0:** Listener was killed → foreground service likely needed
+**Google Pay (GPay):**
+1. Open **Settings** → **Notifications** → **App notifications**.
+2. Find **GPay** and tap it.
+3. Make sure the toggle is **ON**.
 
----
+**PhonePe:**
+1. Same steps. Find **PhonePe** in the list.
+2. Make sure the toggle is **ON**.
 
-## T11: Foreground Service Necessity
+**Paytm:**
+1. Same steps. Find **Paytm** in the list.
+2. Make sure the toggle is **ON**.
 
-**Purpose:** Compare listener survival WITH and WITHOUT a foreground service.
-**Decision it informs:** Whether a persistent notification is needed on Pixel 8.
+**SBI YONO:**
+1. Same steps. Find **SBI YONO** in the list.
+2. Make sure the toggle is **ON**.
 
-**Note:** This test runs AFTER T2. If T2 shows 100% survival, T11 may not be needed on Pixel 8. Run T11 only if T2 shows missed transactions.
+**SBI YONO Lite:**
+1. Same steps. Find **YONO Lite SBI** in the list.
+2. Make sure the toggle is **ON**.
 
-### Setup (only if T2 showed misses)
-1. A future build will include a foreground service option
-2. Install that build
-3. Enable the foreground service in Settings
-4. Repeat the T2 protocol (72-hour soak)
+**HDFC Mobile Banking:**
+1. Same steps. Find **HDFC Bank** in the list.
+2. Make sure the toggle is **ON**.
 
-### What to Report
-- Same table as T2, but with foreground service enabled
-- Compare results: did foreground service improve survival?
+**ICICI iMobile:**
+1. Same steps. Find **iMobile Pay** in the list.
+2. Make sure the toggle is **ON**.
 
----
+**Kotak Mobile Banking:**
+1. Same steps. Find **Kotak** in the list.
+2. Make sure the toggle is **ON**.
 
-## T12: Listener Rebind After Kill
+**Axis Mobile:**
+1. Same steps. Find **Axis Mobile** in the list.
+2. Make sure the toggle is **ON**.
 
-**Purpose:** Does the listener automatically reconnect after being killed?
-**Decision it informs:** Whether a watchdog mechanism is needed.
-
-### Setup
-1. Same install from T1
-
-### Test Steps
-
-**Scenario A: Force Stop**
-1. Make a payment → verify detected
-2. Go to Android Settings → Apps → SpendSense → Force Stop
-3. Wait 30 seconds
-4. Make another payment
-5. Open SpendSense
-6. Was the payment detected? (Yes/No)
-
-**Scenario B: Reboot**
-1. Make a payment → verify detected
-2. Reboot phone completely
-3. Wait for phone to fully start (2 minutes)
-4. Make a payment
-5. Open SpendSense
-6. Was the payment detected? (Yes/No)
-
-**Scenario C: Battery Kill Simulation**
-1. Make a payment → verify detected
-2. Go to Android Settings → Apps → SpendSense → Battery → Restricted
-3. Wait 1 hour
-4. Make a payment
-5. Open SpendSense
-6. Was the payment detected? (Yes/No)
-7. Reset battery setting to default after test
-
-### Record Table
-
-| Scenario | Kill Method | Payment After Kill Detected? | Notes |
-|----------|-----------|------------------------------|-------|
-| A | Force Stop | | |
-| B | Reboot | | |
-| C | Battery Restricted | | |
-
-### What to Report
-- Which scenarios recovered automatically?
-- Which scenarios needed the user to open the app?
-- Did the listener status show "Connected" or "Disconnected" after each scenario?
-
-### Possible Outcomes
-- **All scenarios recover:** No watchdog needed on Pixel 8
-- **Force stop fails, reboot works:** Standard behavior — document as known limitation
-- **Battery restricted fails:** Need to guide users away from Restricted mode
+You only need to do this for the apps you actually have installed on your phone.
 
 ---
 
-## General Instructions for All Tests
+## PART 3: Enable Diagnostic Mode
 
-1. **Use release APK only** — never debug builds (v1 learning)
-2. **Do not clear app data** between tests unless instructed
-3. **Take screenshots** of:
-   - The notification itself (notification shade)
-   - SpendSense transaction list showing detected transaction
-   - Any error or missing detection
-4. **Report raw results** — do not interpret or fix. Just record what happened.
-5. If something breaks or the app crashes, note what you were doing and take a screenshot.
+Diagnostic mode tells the app to record detailed evidence of every payment it detects. This is how we prove the app works — you do NOT need to write anything down.
+
+### Step 6: Turn on diagnostic mode in SpendSense
+
+1. Open **SpendSense** on your phone.
+2. The app starts in **Diagnostic Mode (Mode B)** by default on debug builds.
+3. If using a release build: Go to **Settings** inside SpendSense → find **Diagnostic Mode** → tap to switch to **Mode B (Full Capture)**.
+
+When Mode B is active, the app silently records:
+- Every notification it receives
+- Every decision it makes (accept, reject, trust score, quarantine)
+- Every platform event (listener connected, disconnected, rebind)
+
+You will NOT see anything different on screen. It works in the background.
+
+---
+
+## PART 4: Running the Tests
+
+### TEST T1: GPay Notification Parsing
+
+**What this tests:** Can SpendSense detect payments from Google Pay?
+
+**What you do:**
+
+1. Open **Google Pay** on your phone.
+2. Send ₹1 to any contact or merchant.
+3. Wait 5 seconds.
+4. Open **SpendSense** — you should see the transaction.
+5. Go back to **Google Pay**.
+6. Send another ₹1 payment to a different contact or merchant.
+7. Wait 5 seconds.
+8. Open **SpendSense** — you should now see 2 transactions.
+
+**Keep going.** Make at least **10 payments** with GPay. Try different amounts (₹1, ₹5, ₹10, ₹50, ₹100). Try different contacts and merchants.
+
+If you have **multiple bank accounts** linked to GPay (like HDFC and SBI), try making payments from each bank account.
+
+**If you have other payment apps installed:**
+
+9. Open **PhonePe**. Make 5 payments. Check SpendSense after each.
+10. Open **Paytm**. Make 5 payments. Check SpendSense after each.
+
+**If something goes wrong:**
+- If a payment is NOT detected, take a screenshot of the notification. That's it. The app has already recorded that it missed it.
+- Do NOT try to figure out why. The evidence bundle will tell us.
+
+### TEST T2: Listener Battery Survival (72-Hour Soak Test)
+
+**What this tests:** Does SpendSense keep working for 3 days without you opening it?
+
+**What you do:**
+
+1. Make 1 payment with GPay. Open SpendSense. Confirm it detected it.
+2. **Close SpendSense.** Do NOT open it again for 3 days.
+3. Use your phone normally for the next 3 days. Do NOT open SpendSense.
+4. **After 24 hours:** Make 1 payment with GPay. Do NOT open SpendSense.
+5. **After 48 hours:** Make 1 payment with GPay. Do NOT open SpendSense.
+6. **After 72 hours:** Make 1 payment with GPay. NOW open SpendSense.
+7. Check: Are all 4 transactions there?
+
+**Important rules:**
+- Do NOT exclude SpendSense from battery optimization. Leave everything at default.
+- Do NOT force-stop SpendSense during this test.
+- You can charge your phone normally during the test.
+
+### TEST T12: Listener Rebind After Kill
+
+**What this tests:** Does SpendSense recover after being force-stopped or after a phone reboot?
+
+**Scenario A — Force Stop:**
+
+1. Make 1 payment with GPay. Open SpendSense. Confirm it detected it.
+2. Go to **Settings** → **Apps** → **SpendSense** → tap **Force stop**.
+3. Tap **OK** to confirm.
+4. Wait 30 seconds.
+5. Make another payment with GPay.
+6. Open **SpendSense**.
+7. Is the second payment there?
+
+**Scenario B — Reboot:**
+
+1. Make 1 payment with GPay. Open SpendSense. Confirm it detected it.
+2. **Restart your phone** (hold power button → Restart).
+3. Wait for the phone to fully start up (about 2 minutes).
+4. Make another payment with GPay.
+5. Open **SpendSense**.
+6. Is the second payment there?
+
+**Scenario C — Battery Restricted:**
+
+1. Make 1 payment with GPay. Open SpendSense. Confirm it detected it.
+2. Go to **Settings** → **Apps** → **SpendSense** → **Battery** → tap **Restricted**.
+3. Wait 1 hour.
+4. Make another payment with GPay.
+5. Open **SpendSense**.
+6. Is the second payment there?
+7. **After the test:** Go back to **Settings** → **Apps** → **SpendSense** → **Battery** → set it back to **Optimized** (the default).
+
+---
+
+## PART 5: Exporting the Evidence
+
+After you finish all tests (or at the end of each day), you need to export the evidence bundle. This is the file that proves what the app did.
+
+### Step 7: Export evidence from SpendSense
+
+1. Open **SpendSense** on your phone.
+2. Go to **Settings** (or the menu).
+3. Tap **Export Evidence Bundle**.
+4. Choose **Save to Downloads** OR tap **Share** to send it directly.
+
+**If you chose "Save to Downloads":**
+- The evidence is saved to your phone's Downloads folder.
+- Connect your phone to your laptop with USB.
+- Open the phone's storage on your laptop.
+- Go to **Downloads** → **SpendSense-Evidence** → you'll see a folder named with the build ID.
+- Copy that entire folder to your laptop.
+
+**If you chose "Share":**
+- The share menu will open.
+- You can send the files via WhatsApp, email, Google Drive, or any other app.
+- Send it to yourself or directly to the Guardian chat.
+
+### Step 8: Send the evidence to Guardian
+
+Copy the evidence folder and paste this message to Guardian:
+
+```
+M2 Field Test Evidence attached.
+Build: [build ID shown in the export folder name]
+Device: Pixel 8
+Tests run: T1, T2, T12 (list whichever you ran)
+```
+
+That's it. Guardian will analyze the evidence files automatically.
+
+---
+
+## PART 6: What to Do If Something Goes Wrong
+
+- **App crashes:** Take a screenshot of the error. Then reopen SpendSense and export evidence. The crash will be in the platform trace.
+- **Payment not detected:** Take a screenshot of the notification shade showing the payment notification. The evidence bundle will show it was missed.
+- **Listener shows "Disconnected":** Take a screenshot. Then try: Settings → Notifications → Notification access → turn SpendSense OFF then ON again.
+- **"Export Evidence" not showing:** Make sure you are in **Mode B** (diagnostic mode). Mode A does not collect full evidence.
+
+**Screenshots are only needed when something goes WRONG.** When things work correctly, the evidence bundle captures everything automatically.
+
+---
+
+## Summary — Your Checklist
+
+- [ ] Phone connected to laptop with USB
+- [ ] SpendSense installed via `adb install` command
+- [ ] Notification access granted to SpendSense
+- [ ] Notifications ON for all payment apps you have
+- [ ] Diagnostic Mode B is active
+- [ ] T1: Made 10+ payments with GPay, checked SpendSense after each
+- [ ] T1: Made 5+ payments each with PhonePe and Paytm (if installed)
+- [ ] T2: Made 4 payments over 72 hours without opening SpendSense
+- [ ] T12: Tested force stop, reboot, and battery restricted scenarios
+- [ ] Exported evidence bundle
+- [ ] Sent evidence to Guardian
+
+**Remember: You do NOT fill in any tables. You do NOT write down results. The app records everything. Your only job is: install, pay, export.**
