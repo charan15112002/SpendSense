@@ -198,3 +198,10 @@ No external beta should start until we have:
 - Diagnostics for external testers must be opt-in.
 - Non-financial raw content must not be stored.
 - Evidence must be exportable into the workspace for later analysis.
+
+## Related Lock Pack Files
+
+- [evidence-bundle-contract.md](evidence-bundle-contract.md) — defines mandatory bundle components and review rules
+- [testing-operations-workflow.md](testing-operations-workflow.md) — defines the mandatory testing loop (Claude builds, Charan tests, app captures, Claude analyzes)
+- [milestone-preflight-checklist.md](milestone-preflight-checklist.md) — stop condition: no evidence-capture plan = do not start
+- [implementation-constitution.md](implementation-constitution.md) — #10 privacy, #11 non-financial data retention

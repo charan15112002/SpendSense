@@ -10,6 +10,8 @@ import {
   DATABASE_NAME,
   CREATE_TRANSACTIONS_TABLE,
   CREATE_TRANSACTIONS_INDICES,
+  CREATE_DIAGNOSTIC_TABLES,
+  CREATE_DIAGNOSTIC_INDICES,
 } from './schema';
 
 SQLite.enablePromise(true);
@@ -28,6 +30,15 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
 
   await db.executeSql(CREATE_TRANSACTIONS_TABLE);
   for (const indexSql of CREATE_TRANSACTIONS_INDICES) {
+    await db.executeSql(indexSql);
+  }
+
+  // Diagnostic evidence tables (Bug 1 fix)
+  const diagnosticStatements = CREATE_DIAGNOSTIC_TABLES.split(';').filter(s => s.trim());
+  for (const stmt of diagnosticStatements) {
+    await db.executeSql(stmt);
+  }
+  for (const indexSql of CREATE_DIAGNOSTIC_INDICES) {
     await db.executeSql(indexSql);
   }
 

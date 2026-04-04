@@ -2,7 +2,7 @@
  * SpendSense — M2 Field Test Build
  *
  * Minimal UI for field testing only. Full UI is M4 scope.
- * This screen shows: listener status, diagnostic mode toggle, evidence export.
+ * Shows: listener status, diagnostic mode toggle, evidence export, tx count from SQLite.
  */
 
 import React, {useState, useEffect, useCallback} from 'react';
@@ -19,14 +19,14 @@ import {
 import {
   getDiagnosticMode,
   setDiagnosticMode,
+  initDiagnosticMode,
   exportEvidenceBundle,
   purgeEvidence,
-  getEventTimeline,
-  getDecisionTrace,
-  getPlatformTrace,
+  getEventCount,
   logPlatformEvent,
 } from './src/services/DiagnosticLogger';
 import {processNotification} from './src/services/DetectionPipeline';
+import {getAllTransactions} from './src/database/TransactionRepository';
 
 const {SpendSenseDetection, EvidenceExport} = NativeModules;
 
@@ -41,11 +41,20 @@ function App(): React.JSX.Element {
   const [txCount, setTxCount] = useState(0);
   const [lastRefresh, setLastRefresh] = useState(new Date().toLocaleTimeString());
 
+  // Initialize diagnostic mode from SQLite on startup
+  useEffect(() => {
+    initDiagnosticMode().then(() => setMode(getDiagnosticMode()));
+  }, []);
+
   const refreshStatus = useCallback(async () => {
     try {
       const status = await SpendSenseDetection.getListenerStatus();
       setListenerStatus(status);
-      setEventCount(getEventTimeline().length);
+      const count = await getEventCount();
+      setEventCount(count);
+      // Get real tx count from SQLite (persists across restarts)
+      const txs = await getAllTransactions();
+      setTxCount(txs.length);
       setLastRefresh(new Date().toLocaleTimeString());
     } catch (e) {
       // Module may not be available in test
@@ -63,7 +72,6 @@ function App(): React.JSX.Element {
     const emitter = new NativeEventEmitter(SpendSenseDetection);
     const sub = emitter.addListener('onNotificationReceived', async (data) => {
       try {
-        // Load whitelist and templates from assets (simplified for field test)
         const whitelist = require('./android/app/src/main/assets/package_whitelist.json');
         const templates = require('./android/app/src/main/assets/notification_templates.json');
         const result = await processNotification(
@@ -76,24 +84,25 @@ function App(): React.JSX.Element {
         if (result) {
           setTxCount(prev => prev + 1);
         }
-        setEventCount(getEventTimeline().length);
+        const count = await getEventCount();
+        setEventCount(count);
       } catch (e) {
-        logPlatformEvent({event: 'notification_processing_error', detail: {error: String(e)}});
+        await logPlatformEvent({event: 'notification_processing_error', detail: {error: String(e)}});
       }
     });
     return () => sub.remove();
   }, []);
 
-  const toggleMode = () => {
+  const toggleMode = async () => {
     const newMode = mode === 'A' ? 'B' : 'A';
-    setDiagnosticMode(newMode);
+    await setDiagnosticMode(newMode);
     setMode(newMode);
   };
 
   const handleExport = async () => {
     try {
       const deviceInfo = await EvidenceExport.getDeviceInfo();
-      const bundle = exportEvidenceBundle({
+      const bundle = await exportEvidenceBundle({
         build_id: `SS-M2-founder-local-playstore-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-01`,
         flavor: 'playstore',
         version_name: '0.0.1',
@@ -138,15 +147,15 @@ function App(): React.JSX.Element {
   };
 
   const handlePurge = () => {
-    Alert.alert('Purge Evidence?', 'This clears all diagnostic logs from memory. Export first!', [
+    Alert.alert('Purge Evidence?', 'This clears all diagnostic logs. Export first!', [
       {text: 'Cancel'},
       {
         text: 'Purge',
         style: 'destructive',
-        onPress: () => {
-          purgeEvidence();
+        onPress: async () => {
+          await purgeEvidence();
           setEventCount(0);
-          Alert.alert('Purged', 'All in-memory evidence cleared.');
+          Alert.alert('Purged', 'All diagnostic evidence cleared from database.');
         },
       },
     ]);
@@ -155,9 +164,8 @@ function App(): React.JSX.Element {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>SpendSense</Text>
-      <Text style={styles.subtitle}>M2 Field Test Build</Text>
+      <Text style={styles.subtitle}>M2 Field Test Build (v2 — bug fixes)</Text>
 
-      {/* Listener Status */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Notification Listener</Text>
         <Text style={styles.statusText}>
@@ -183,15 +191,13 @@ function App(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Detection Stats */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Detection</Text>
         <Text style={styles.statNumber}>{txCount}</Text>
-        <Text style={styles.statLabel}>Transactions Detected</Text>
-        <Text style={styles.dimText}>{eventCount} diagnostic events recorded</Text>
+        <Text style={styles.statLabel}>Transactions Detected (persisted)</Text>
+        <Text style={styles.dimText}>{eventCount} diagnostic events in database</Text>
       </View>
 
-      {/* Diagnostic Mode */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Diagnostic Mode</Text>
         <Text style={styles.statusText}>
@@ -207,7 +213,6 @@ function App(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Evidence Export */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Evidence Bundle</Text>
         <Text style={styles.dimText}>
@@ -224,7 +229,7 @@ function App(): React.JSX.Element {
       <View style={styles.footer}>
         <Text style={styles.dimText}>
           Mode B records every pipeline step automatically.{'\n'}
-          You do NOT need to write anything down.{'\n'}
+          Data persists across app restarts (SQLite).{'\n'}
           Just make payments and export when done.
         </Text>
       </View>

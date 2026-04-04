@@ -97,6 +97,21 @@ The log must record:
 - Every legal gate status change
 - Current project state
 
+## 7b. Codex Responsibility Substitution Rule
+
+During the Codex-absent period (March 29 — April 3, 2026), **every responsibility assigned to Codex in any Lock Pack file is Guardian's responsibility.** This includes but is not limited to:
+
+- `codex-operating-brief.md`: All 14 responsibilities (lock guardian, process architect, milestone gate keeper, evidence reviewer, risk escalator, etc.) — Guardian owns these now
+- `roles-and-responsibilities.md`: "Codex is the process owner and lock guardian" — Guardian is the process owner and lock guardian now
+- `testing-operations-workflow.md` Section 3 Step 7: "Codex verifies the interpretation" — Guardian verifies the interpretation now
+- `evidence-bundle-contract.md`: "Claude and Codex should treat any bundle missing mandatory components as incomplete" — Guardian applies this rule now
+- `document-consumption-protocol.md` Section 6: "Required Behavior for Codex" — Guardian follows these reading standards now
+- `legacy-code-disposition.md`: "Codex explicitly agrees the code is reusable" — Guardian makes this call now
+
+**Rule:** When Guardian reads any Lock Pack file and sees "Codex," substitute "Guardian" for the duration of the Codex-absent period. When Codex returns, this substitution rule expires and Codex reclaims all original responsibilities.
+
+**Why this rule exists:** Founder identified (2026-04-01) that without an explicit substitution rule, Guardian may not recognize responsibilities assigned to Codex in files Guardian has not read, leading to gaps in governance coverage.
+
 ## 8. What Happens When Codex Returns (April 3rd)
 
 1. Codex reads `codex-handoff-log.md` first

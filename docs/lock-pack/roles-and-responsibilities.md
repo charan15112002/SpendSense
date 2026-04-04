@@ -147,3 +147,11 @@ This rule applies to:
 - testing
 - prompts to Claude
 - future-version decisions
+
+## Related Lock Pack Files
+
+- [codex-operating-brief.md](codex-operating-brief.md) — detailed Codex operating standard
+- [claude-collaboration-brief.md](claude-collaboration-brief.md) — Claude (Implementer) operating instructions
+- [guardian-collaboration-brief.md](guardian-collaboration-brief.md) — Guardian operating instructions
+- [dual-agent-operating-protocol.md](dual-agent-operating-protocol.md) — how Implementer and Guardian coordinate; includes Codex substitution rule (Section 7b)
+- [implementation-constitution.md](implementation-constitution.md) — 15 non-negotiable build rules for Claude

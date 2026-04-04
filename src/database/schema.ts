@@ -73,6 +73,47 @@ export const CREATE_TRANSACTIONS_TABLE = `
   );
 `;
 
+// Diagnostic evidence tables (Bug 1 fix: persist to SQLite, not memory)
+export const CREATE_DIAGNOSTIC_TABLES = `
+  CREATE TABLE IF NOT EXISTS diagnostic_config (
+    key TEXT PRIMARY KEY NOT NULL,
+    value TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS event_timeline (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts TEXT NOT NULL,
+    seq INTEGER NOT NULL,
+    event TEXT NOT NULL,
+    source TEXT,
+    package_or_sender TEXT,
+    detail TEXT,
+    raw_text TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS decision_trace (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts TEXT NOT NULL,
+    function_name TEXT NOT NULL,
+    inputs TEXT NOT NULL,
+    output TEXT NOT NULL,
+    score REAL,
+    exclusion_reason TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS platform_trace (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts TEXT NOT NULL,
+    event TEXT NOT NULL,
+    detail TEXT
+  );
+`;
+
+export const CREATE_DIAGNOSTIC_INDICES = [
+  'CREATE INDEX IF NOT EXISTS idx_event_timeline_ts ON event_timeline(ts);',
+  'CREATE INDEX IF NOT EXISTS idx_platform_trace_ts ON platform_trace(ts);',
+];
+
 export const CREATE_TRANSACTIONS_INDICES = [
   'CREATE INDEX IF NOT EXISTS idx_transactions_timestamp ON transactions(timestamp);',
   'CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);',

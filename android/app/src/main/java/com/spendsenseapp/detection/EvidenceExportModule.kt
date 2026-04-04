@@ -1,7 +1,10 @@
 package com.spendsenseapp.detection
 
+import android.content.ContentValues
 import android.content.Intent
+import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import com.facebook.react.bridge.*
 import java.io.File
 import java.io.FileWriter
@@ -10,10 +13,8 @@ import java.io.FileWriter
  * Native module for exporting diagnostic evidence bundles.
  * (Lock IDs: evidence-bundle-contract, test-evidence-capture-plan)
  *
- * Saves evidence files to Downloads/SpendSense-Evidence/<build_id>/
- * Also supports Android share sheet for sending to Guardian.
- *
- * No background upload — evidence stays local until user exports.
+ * Bug 4 fix: Uses MediaStore API for Android 10+ (Scoped Storage).
+ * Falls back to legacy file API for older versions.
  */
 class EvidenceExportModule(
     private val reactContext: ReactApplicationContext
@@ -22,8 +23,7 @@ class EvidenceExportModule(
     override fun getName(): String = "EvidenceExport"
 
     /**
-     * Save evidence bundle files to Downloads folder.
-     * Creates: manifest.json, event-timeline.jsonl, decision-trace.jsonl, platform-trace.jsonl
+     * Save evidence bundle files to Downloads folder via MediaStore (Android 10+).
      */
     @ReactMethod
     fun saveToDownloads(
@@ -35,24 +35,45 @@ class EvidenceExportModule(
         promise: Promise
     ) {
         try {
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS
-            )
-            val evidenceDir = File(downloadsDir, "SpendSense-Evidence/$buildId")
-            evidenceDir.mkdirs()
+            val subDir = "SpendSense-Evidence/$buildId"
 
-            writeFile(File(evidenceDir, "manifest.json"), manifestJson)
-            writeFile(File(evidenceDir, "event-timeline.jsonl"), eventTimelineJsonl)
-            writeFile(File(evidenceDir, "decision-trace.jsonl"), decisionTraceJsonl)
-            writeFile(File(evidenceDir, "platform-trace.jsonl"), platformTraceJsonl)
+            saveFileViaMediaStore("manifest.json", subDir, manifestJson, "application/json")
+            saveFileViaMediaStore("event-timeline.jsonl", subDir, eventTimelineJsonl, "application/x-ndjson")
+            saveFileViaMediaStore("decision-trace.jsonl", subDir, decisionTraceJsonl, "application/x-ndjson")
+            saveFileViaMediaStore("platform-trace.jsonl", subDir, platformTraceJsonl, "application/x-ndjson")
 
             val result = Arguments.createMap().apply {
-                putString("path", evidenceDir.absolutePath)
+                putString("path", "Downloads/$subDir")
                 putInt("fileCount", 4)
             }
             promise.resolve(result)
         } catch (e: Exception) {
             promise.reject("EXPORT_ERROR", "Failed to save evidence: ${e.message}")
+        }
+    }
+
+    private fun saveFileViaMediaStore(fileName: String, subDir: String, content: String, mimeType: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10+ : MediaStore API (Bug 4 fix)
+            val values = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                put(MediaStore.Downloads.MIME_TYPE, mimeType)
+                put(MediaStore.Downloads.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/$subDir")
+            }
+            val resolver = reactContext.contentResolver
+            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                ?: throw Exception("Failed to create MediaStore entry for $fileName")
+            resolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(content.toByteArray(Charsets.UTF_8))
+            } ?: throw Exception("Failed to open output stream for $fileName")
+        } else {
+            // Legacy fallback
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS
+            )
+            val evidenceDir = File(downloadsDir, subDir)
+            evidenceDir.mkdirs()
+            FileWriter(File(evidenceDir, fileName)).use { it.write(content) }
         }
     }
 
@@ -69,31 +90,24 @@ class EvidenceExportModule(
         promise: Promise
     ) {
         try {
-            // First save to a temp location
             val cacheDir = File(reactContext.cacheDir, "evidence-export/$buildId")
             cacheDir.mkdirs()
 
-            val manifestFile = writeFile(File(cacheDir, "manifest.json"), manifestJson)
-            val timelineFile = writeFile(File(cacheDir, "event-timeline.jsonl"), eventTimelineJsonl)
-            val decisionFile = writeFile(File(cacheDir, "decision-trace.jsonl"), decisionTraceJsonl)
-            val platformFile = writeFile(File(cacheDir, "platform-trace.jsonl"), platformTraceJsonl)
+            val files = listOf(
+                writeFile(File(cacheDir, "manifest.json"), manifestJson),
+                writeFile(File(cacheDir, "event-timeline.jsonl"), eventTimelineJsonl),
+                writeFile(File(cacheDir, "decision-trace.jsonl"), decisionTraceJsonl),
+                writeFile(File(cacheDir, "platform-trace.jsonl"), platformTraceJsonl),
+            )
+
+            val uris = ArrayList(files.map { file ->
+                androidx.core.content.FileProvider.getUriForFile(
+                    reactContext, "${reactContext.packageName}.fileprovider", file
+                )
+            })
 
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                 type = "application/json"
-                val uris = arrayListOf(
-                    androidx.core.content.FileProvider.getUriForFile(
-                        reactContext, "${reactContext.packageName}.fileprovider", manifestFile
-                    ),
-                    androidx.core.content.FileProvider.getUriForFile(
-                        reactContext, "${reactContext.packageName}.fileprovider", timelineFile
-                    ),
-                    androidx.core.content.FileProvider.getUriForFile(
-                        reactContext, "${reactContext.packageName}.fileprovider", decisionFile
-                    ),
-                    androidx.core.content.FileProvider.getUriForFile(
-                        reactContext, "${reactContext.packageName}.fileprovider", platformFile
-                    ),
-                )
                 putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
                 putExtra(Intent.EXTRA_SUBJECT, "SpendSense Evidence Bundle — $buildId")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -112,9 +126,6 @@ class EvidenceExportModule(
         }
     }
 
-    /**
-     * Get device info for build manifest.
-     */
     @ReactMethod
     fun getDeviceInfo(promise: Promise) {
         try {

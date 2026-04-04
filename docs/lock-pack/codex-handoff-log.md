@@ -304,6 +304,101 @@ When Codex returns: read this file top to bottom, then read all governance files
 **Files changed:**
 - `docs/lock-pack/codex-handoff-log.md` — this entry added
 
+### 2026-04-01 — Implementer Delivers Evidence Capture System
+
+**Actor:** Implementer
+**What happened:**
+- Implementer read ALL Lock Pack files as mandated by founder
+- Built complete diagnostic evidence capture system (Mode A/B)
+- DiagnosticLogger.ts: event timeline, decision trace, platform trace, build manifest, export function
+- EvidenceExportModule.kt: native Android module for saving to Downloads + share sheet
+- FileProvider configured for share sheet URI access
+- DetectionPipeline.ts updated with logging hooks at every pipeline step
+- Field test procedure completely rewritten — zero manual recording, 5th-class-student language
+- 18 new tests (76 total), both APK flavors build
+
+### 2026-04-01 — Guardian Evidence Capture Verification: PASS
+
+**Actor:** Guardian
+**What happened:**
+- Guardian applied new Section 4b Milestone Verdict Gate (mandatory checks added after M2 failure)
+- Read all Implementer source files line-by-line
+- Cross-referenced against ALL governance files:
+  - evidence-bundle-contract.md: all 4 mandatory components present (manifest.json, event-timeline.jsonl, decision-trace.jsonl, platform-trace.jsonl)
+  - test-evidence-capture-plan.md: Mode A/B toggle correct, all capture categories covered, privacy rule enforced, no background upload
+  - testing-operations-workflow.md: app captures evidence (not tester), export is user-triggered
+  - milestone-preflight-checklist.md: all stop conditions cleared — evidence capture plan exists, no vague verbal feedback dependency
+  - build-manifest-template.md: minor gap (track/expiry_policy fields missing — non-blocking)
+  - implementation-constitution.md: privacy (#10), non-financial data (#11), traceability (#15) all satisfied
+- Verified field test procedure rewrite: USB setup, app-by-app notification guide, diagnostic mode, evidence export — all at 5th-class-student level
+- Verified pipeline logging: every step of both notification and SMS paths has logging hooks
+- Zero deviations found
+
+**M2 status after this verification:**
+- Code: PASS
+- Evidence capture: PASS
+- Field test procedure: PASS
+- Field tests: NOT RUN — Charan must execute on Pixel 8
+- Milestone: NOT COMPLETE until field tests done
+
+**Files changed:**
+- `docs/lock-pack/implementation-coverage-ledger.md` — COV-03 notes updated
+- `docs/lock-pack/codex-handoff-log.md` — this entry added, state table updated
+
+### 2026-04-01 — Founder Decision: Early Install for Daily Transaction Capture
+
+**Actor:** Founder (Charan)
+**What happened:**
+- Founder heading to office, wants to install APK on Pixel 8 now and let it capture real daily transactions before formal field testing in the evening
+- Guardian confirmed: this aligns with evidence capture model — real-world UPI payments (GPay to merchants/family/friends) are exactly what T1 tests. More diverse data = better coverage.
+- Guardian confirmed: install `app-playstore-release.apk` only (not sideload). Sideload is separate testing.
+- Guardian confirmed: Charan must enable Mode B (diagnostic) after install if it's a release build
+- Open question routed to Implementer: Is the APK available for download from GitHub on mobile, or must it be installed via USB/adb from laptop? Which build type is it (debug/release)?
+- Guardian confirmed: codex handoff log is current as of this entry
+
+**Protocol note:** Guardian answered the protocol/governance questions (which APK, is daily use valid, Mode B requirement). Installation technical questions routed to Implementer.
+
+### 2026-04-01 — First Real Field Test: Critical Bugs Found
+
+**Actor:** Founder (Charan) testing on Pixel 8, Guardian analyzing evidence
+**What happened:**
+- Charan installed `app-playstore-release.apk` on Pixel 8 (Android 16)
+- Made real payments using GPay, PhonePe, and Paytm during daily use
+- Exported 2 evidence bundles via WhatsApp (Downloads save path broken)
+- Guardian analyzed evidence bundles and found 6 bugs, 2 critical
+
+**Evidence analysis (from exported bundles):**
+- 15 total events captured across both bundles
+- INDmoney notifications: correctly discarded (not whitelisted) — PASS
+- WhatsApp notifications: correctly discarded — PASS
+- PhonePe notification 1: passed filter but FAILED to parse (no amount extracted) — BUG
+- PhonePe notification 2: parsed via generic fallback (no template match), ₹1, trust score 38 — PARTIAL
+- GPay: ZERO events in evidence despite Charan making GPay payments — CRITICAL BUG
+- Paytm: ZERO events — Paytm app didn't send notifications
+
+**Bugs identified:**
+1. **CRITICAL: GPay completely invisible** — no notification events logged at all despite real payments
+2. **CRITICAL: All JS state resets on app kill** — DiagnosticLogger uses in-memory arrays, transaction counts use JS counters, diagnostic mode uses JS variable. Android kills the process → everything lost. T2 soak test impossible in this state.
+3. **HIGH: PhonePe templates don't match real notifications** — first notification failed to parse entirely, second used generic fallback only
+4. **HIGH: Diagnostic Mode B reverts to Mode A** — JS variable not persisted to storage
+5. **MEDIUM: Downloads export path broken on Android 16** — permissions issue; share sheet works as workaround
+6. **MEDIUM: Paytm sends no notifications** — may be Paytm app behavior, needs investigation
+
+**Founder observations:**
+- "It is complete disaster" — transaction count showed 1 then went to 0, diagnostic events fluctuated between 0/4/5/14, Mode B kept reverting
+- App UI is minimal diagnostic screen (4 sections: listener status, permission, refresh, detection count) — this is expected for M2 (real UI is M5), but founder was confused by it
+- Evidence export to Downloads didn't work — Charan shared via WhatsApp Web instead
+
+**Guardian decisions:**
+1. Lock Pack cross-reference gap identified — 25 of 39 files have zero cross-references to other Lock Pack files. Will add pointers.
+2. Codex substitution rule added to dual-agent-operating-protocol.md Section 7b — wherever "Codex" appears in any Lock Pack file, Guardian owns that responsibility during Codex-absent period
+3. M2 field tests CANNOT proceed until critical bugs are fixed — evidence system must survive app restarts, GPay detection must work
+4. Implementer must fix bugs before any further testing
+
+**Files changed:**
+- `docs/lock-pack/dual-agent-operating-protocol.md` — Section 7b added (Codex substitution rule)
+- `docs/lock-pack/codex-handoff-log.md` — this entry added
+
 **Ledger updates:**
 - COV-03: Not started → Verified
 
@@ -328,7 +423,7 @@ When Codex returns: read this file top to bottom, then read all governance files
 | Legacy code | Archived to `legacy/v1-abandoned/` |
 | M0 | COMPLETE — verified by Guardian |
 | M1 | COMPLETE — verified by Guardian (zero deviations) |
-| Current milestone | M2 — code verified PASS, but evidence capture system NOT BUILT and field tests NOT RUN. Implementer must build Mode B diagnostic capture + evidence export before field testing begins. |
+| Current milestone | M2 — code PASS, evidence capture PASS, but FIRST FIELD TEST FOUND 6 BUGS (2 critical). Implementer must fix before further testing. |
 | Coverage ledger | COV-01 Verified, COV-02 Verified, COV-03 Verified, COV-04 Verified, rest Not started |
 | Legal gates | CR-01 open (AI cross-border), CR-02 open (retention/delete) |
 | Compliance items | COMP-01 through COMP-10 all "Not started" |

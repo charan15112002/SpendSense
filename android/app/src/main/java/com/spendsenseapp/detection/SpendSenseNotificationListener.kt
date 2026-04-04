@@ -39,6 +39,10 @@ class SpendSenseNotificationListener : NotificationListenerService() {
         if (sbn == null) return
 
         val packageName = sbn.packageName ?: return
+
+        // Bug 2 fix: Log EVERY package name at native level for debugging
+        Log.d(TAG, "onNotificationPosted: package=$packageName")
+
         val extras = sbn.notification?.extras ?: return
 
         // Extract raw text from notification
@@ -49,7 +53,10 @@ class SpendSenseNotificationListener : NotificationListenerService() {
         // Use bigText if available (more complete), fall back to text
         val rawText = if (bigText.isNotBlank()) bigText else text
 
-        if (rawText.isBlank()) return
+        if (rawText.isBlank()) {
+            Log.d(TAG, "onNotificationPosted: blank rawText for package=$packageName, title=$title")
+            return
+        }
 
         val timestamp = sbn.postTime
 

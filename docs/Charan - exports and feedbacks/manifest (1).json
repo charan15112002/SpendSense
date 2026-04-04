@@ -1,0 +1,14 @@
+{
+  "build_id": "SS-M2-founder-local-playstore-20260401-01",
+  "flavor": "playstore",
+  "version_name": "0.0.1",
+  "version_code": 1,
+  "diagnostic_mode": "B",
+  "tester_alias": "Charan",
+  "device_model": "Pixel 8",
+  "android_version": "16",
+  "milestone": "M2",
+  "start_time": "2026-03-31T04:28:04.474Z",
+  "end_time": "2026-04-01T04:28:04.474Z",
+  "date_range": "2026-03-31T04:28:04.474Z to 2026-04-01T04:28:04.474Z"
+}

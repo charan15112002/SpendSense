@@ -7,6 +7,11 @@
       "type": "upi_app",
       "sender_trust": 20
     },
+    "com.google.android.apps.nbu.paisa.user": {
+      "name": "Google Pay (user variant)",
+      "type": "upi_app",
+      "sender_trust": 20
+    },
     "com.phonepe.app": {
       "name": "PhonePe",
       "type": "upi_app",

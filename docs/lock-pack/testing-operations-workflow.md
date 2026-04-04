@@ -163,3 +163,11 @@ A bug report is not complete unless it includes:
 - The app must provide exportable evidence for controlled testing.
 - Claude must interpret the evidence before asking Charan for narrative explanation.
 - Codex must verify the interpretation before accepting the conclusion.
+
+## Related Lock Pack Files
+
+- [evidence-bundle-contract.md](evidence-bundle-contract.md) — defines mandatory bundle components and review rules
+- [test-evidence-capture-plan.md](test-evidence-capture-plan.md) — defines capture modes (A/B/C) and what data must be recorded
+- [test-ledger.md](test-ledger.md) — tracks test status and results
+- [milestone-preflight-checklist.md](milestone-preflight-checklist.md) — stop condition if no evidence plan exists
+- [risk-register.md](risk-register.md) — risks updated based on test results

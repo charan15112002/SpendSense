@@ -118,3 +118,10 @@ If incomplete:
 - Evidence must be tied to one build ID.
 - Evidence must be rich enough to reconstruct app decisions.
 - Missing evidence must be treated as a test-process failure, not guessed around.
+
+## Related Lock Pack Files
+
+- [test-evidence-capture-plan.md](test-evidence-capture-plan.md) — defines capture modes (A/B/C) and what must be captured
+- [testing-operations-workflow.md](testing-operations-workflow.md) — defines the mandatory testing loop and roles
+- [milestone-preflight-checklist.md](milestone-preflight-checklist.md) — stop condition: no evidence-capture plan = do not start
+- [build-manifest-template.md](build-manifest-template.md) — template for build metadata in manifests

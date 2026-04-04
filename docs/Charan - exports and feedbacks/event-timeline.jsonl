@@ -1,0 +1,11 @@
+{"ts":"2026-04-01T04:16:32.909Z","seq":1,"event":"notification_received","source":"notification","package_or_sender":"in.indwealth","detail":{"timestamp":1775016992616}}
+{"ts":"2026-04-01T04:16:32.915Z","seq":2,"event":"source_discarded","source":"notification","package_or_sender":"in.indwealth","detail":{"reason":"not_whitelisted"}}
+{"ts":"2026-04-01T04:17:15.841Z","seq":3,"event":"notification_received","source":"notification","package_or_sender":"in.indwealth","detail":{"timestamp":1775017035612}}
+{"ts":"2026-04-01T04:17:15.841Z","seq":4,"event":"source_discarded","source":"notification","package_or_sender":"in.indwealth","detail":{"reason":"not_whitelisted"}}
+{"ts":"2026-04-01T04:18:23.524Z","seq":5,"event":"notification_received","source":"notification","package_or_sender":"com.phonepe.app","detail":{"timestamp":1775017103293}}
+{"ts":"2026-04-01T04:18:23.524Z","seq":6,"event":"filter_passed","source":"notification","package_or_sender":"com.phonepe.app"}
+{"ts":"2026-04-01T04:18:23.533Z","seq":7,"event":"source_discarded","source":"notification","package_or_sender":"com.phonepe.app","detail":{"reason":"parse_failed_no_amount"}}
+{"ts":"2026-04-01T04:19:46.847Z","seq":8,"event":"notification_received","source":"notification","package_or_sender":"com.phonepe.app","detail":{"timestamp":1775017186622}}
+{"ts":"2026-04-01T04:19:46.847Z","seq":9,"event":"filter_passed","source":"notification","package_or_sender":"com.phonepe.app"}
+{"ts":"2026-04-01T04:19:46.852Z","seq":10,"event":"parse_success","source":"notification","package_or_sender":"com.phonepe.app","detail":{"amount":1,"merchant":"smatrgeee20111999-1","status":"success","flow":"outflow","templateMatchLevel":"has_amount_merchant"}}
+{"ts":"2026-04-01T04:19:46.962Z","seq":11,"event":"transaction_stored","source":"notification","package_or_sender":"com.phonepe.app","detail":{"amount":1,"trust_score":38,"is_quarantined":false,"confidence":"uncertain","transaction_id":"tx_1775017186957_hkyhbdo"}}

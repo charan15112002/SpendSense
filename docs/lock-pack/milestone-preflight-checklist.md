@@ -43,3 +43,14 @@ Do not start the milestone if any of these are true:
 The milestone may start only when the answer to this is yes:
 
 "If this goes wrong, do we already know how we will notice it and what we will do next?"
+
+## Related Lock Pack Files
+
+- [implementation-coverage-ledger.md](implementation-coverage-ledger.md) — coverage rows to identify before starting
+- [test-ledger.md](test-ledger.md) — test items to identify before starting
+- [risk-register.md](risk-register.md) — risks to re-read before starting
+- [requirements-traceability-matrix.md](requirements-traceability-matrix.md) — lock IDs to cite
+- [test-evidence-capture-plan.md](test-evidence-capture-plan.md) — evidence mode to choose before starting
+- [evidence-bundle-contract.md](evidence-bundle-contract.md) — bundle structure for test output
+- [build-manifest-template.md](build-manifest-template.md) — build ID plan if APK will be distributed
+- [future-version-register.md](future-version-register.md) — where to park out-of-scope ideas

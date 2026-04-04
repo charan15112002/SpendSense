@@ -72,3 +72,13 @@ Before writing code, the assistant must answer:
 3. Which tests from the test ledger must pass before the task is considered done?
 
 If the assistant cannot answer those three questions, it is not ready to code.
+
+## Related Lock Pack Files
+
+- [requirements-traceability-matrix.md](requirements-traceability-matrix.md) — all lock IDs and their source sections
+- [test-ledger.md](test-ledger.md) — tests that must pass per milestone
+- [future-version-register.md](future-version-register.md) — where to park out-of-scope ideas
+- [milestone-preflight-checklist.md](milestone-preflight-checklist.md) — preflight checks before every milestone
+- [testing-operations-workflow.md](testing-operations-workflow.md) — mandatory testing loop after coding
+- [evidence-bundle-contract.md](evidence-bundle-contract.md) — evidence structure for test output
+- [risk-register.md](risk-register.md) — risks to check before and after building

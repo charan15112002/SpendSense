@@ -14,6 +14,50 @@
         "pattern": "Received (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) from (.+?)(?:\\s|$)",
         "extract": { "amount": 1, "merchant": 2 },
         "flow": "inflow"
+      },
+      {
+        "name": "gpay_sent",
+        "pattern": "Sent (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) to (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      },
+      {
+        "name": "gpay_debited",
+        "pattern": "(?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |was |)(?:debited|deducted)",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "gpay_payment",
+        "pattern": "Payment of (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:to|for)\\s+(.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      }
+    ],
+    "com.google.android.apps.nbu.paisa.user": [
+      {
+        "name": "gpay_user_paid",
+        "pattern": "Paid (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) to (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      },
+      {
+        "name": "gpay_user_received",
+        "pattern": "Received (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) from (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "inflow"
+      },
+      {
+        "name": "gpay_user_sent",
+        "pattern": "Sent (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) to (.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      },
+      {
+        "name": "gpay_user_debited",
+        "pattern": "(?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |)debited",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
       }
     ],
     "com.phonepe.app": [
@@ -28,6 +72,30 @@
         "pattern": "Received (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?) from (.+?)(?:\\s|$)",
         "extract": { "amount": 1, "merchant": 2 },
         "flow": "inflow"
+      },
+      {
+        "name": "phonepe_debited",
+        "pattern": "(?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |was |)(?:debited|deducted|sent)",
+        "extract": { "amount": 1 },
+        "flow": "outflow"
+      },
+      {
+        "name": "phonepe_credited",
+        "pattern": "(?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:has been |was |)(?:credited|received|added)",
+        "extract": { "amount": 1 },
+        "flow": "inflow"
+      },
+      {
+        "name": "phonepe_payment_to",
+        "pattern": "Payment of (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*(?:to|for)\\s+(.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
+      },
+      {
+        "name": "phonepe_transfer",
+        "pattern": "(?:Transferred|Transfer of) (?:Rs\\.?|₹)\\s?([\\d,]+(?:\\.\\d{1,2})?)\\s*to\\s+(.+?)(?:\\s|$)",
+        "extract": { "amount": 1, "merchant": 2 },
+        "flow": "outflow"
       }
     ],
     "net.one97.paytm": [
